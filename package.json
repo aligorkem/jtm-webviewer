@@ -1,0 +1,15 @@
+{
+  "name": "cordova-plugin-template",
+  "version": "0.0.1",
+  "author": "Ionic Framework",
+  "homepage": "http://ionicframework.com/",
+  "private": true,
+  "cordova": {
+    "id": "cordova-plugin-template",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "description": "A starting point for a Cordova Plugin"
+}
