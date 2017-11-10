@@ -1,4 +1,4 @@
-Cordova Plugin Template
+JTM WebViewer
 ======
 
-This is a simple starting point for building a Cordova plugin on iOS and Android.
+It is a custom cordova plugin for JTM.
