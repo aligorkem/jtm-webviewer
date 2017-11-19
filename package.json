@@ -1,15 +1,32 @@
 {
-  "name": "cordova-plugin-template",
+  "name": "cordova-plugin-jtm-webviewer",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "http://ionicframework.com/",
-  "private": true,
+  "description": "Native WebViewer Component for JTM",
   "cordova": {
-    "id": "cordova-plugin-template",
+    "id": "cordova-plugin-jtm-webviewer",
     "platforms": [
-      "android",
       "ios"
     ]
   },
-  "description": "A starting point for a Cordova Plugin"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aligorkem/jtm-webviewer.git"
+  },
+  "keywords": [
+    "jtm",
+    "webviewer",
+    "native webviewer"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=6.2.0"
+    }
+  ],
+  "author": "Ali Gorkem",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/aligorkem/jtm-webviewer/issues"
+  },
+  "homepage": "https://github.com/aligorkem/jtm-webviewer"
 }
