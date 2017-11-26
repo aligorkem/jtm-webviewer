@@ -1,11 +1,12 @@
 {
   "name": "cordova-plugin-jtm-webviewer",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Native WebViewer Component for JTM",
   "cordova": {
     "id": "cordova-plugin-jtm-webviewer",
     "platforms": [
-      "ios"
+      "ios",
+      "android"
     ]
   },
   "repository": {
