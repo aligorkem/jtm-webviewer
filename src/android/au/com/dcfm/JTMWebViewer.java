@@ -161,7 +161,16 @@ CDVInvokedUrlCommand *actionCommand;
                                                      };
                   [self sendActionMessage: returnDictionary];
             }
-
+            /*
+             Needs to be implemented;
+                  webToNative_OpenDCFMUrl
+                  webToNative_ClearCache
+                  webToNative_ExceptionOccured
+                  webToNative_ReportAreaEntryTakePhoto
+                  webToNative_ReportAreaTakePhoto
+                  webToNative_ReportScopeTakePhoto
+                  webToNativeReLoadSYNCPage
+             */
       }
 
       return YES;
@@ -212,3 +221,35 @@ CDVInvokedUrlCommand *actionCommand;
 
 
 @end
+
+
+
+/*
+ //NSString *url=@"http://54.153.177.241/swan";
+
+ //- (void)echo:(CDVInvokedUrlCommand *)command;
+ //- (void)getDate:(CDVInvokedUrlCommand *)command;
+
+ //@property (nonatomic, retain) UIView* mapView;
+
+ //@property (nonatomic, retain) UIWebView* webView;
+
+
+ - (void)echo:(CDVInvokedUrlCommand *)command {
+ NSString* phrase = [command.arguments objectAtIndex:0];
+ NSLog(@"%@", phrase);
+ }
+
+ - (void)getDate:(CDVInvokedUrlCommand *)command {
+ NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+ NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+ [dateFormatter setLocale:enUSPOSIXLocale];
+ [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+
+ NSDate *now = [NSDate date];
+ NSString *iso8601String = [dateFormatter stringFromDate:now];
+
+ CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:iso8601String];
+ [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+ }
+ */
