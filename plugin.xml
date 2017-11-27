@@ -25,6 +25,7 @@
             </config-file>
 
             <source-file src="src/android/au/com/dcfm/JTMWebViewer.java" target-dir="src/au/com/dcfm/"/>
+            <source-file src="src/android/au/com/dcfm/JsInterface.java" target-dir="src/au/com/dcfm/"/>
       </platform>
 
       <!-- ios -->
