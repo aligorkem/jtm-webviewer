@@ -43,6 +43,34 @@ NSString *password;
       [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
+
+CDVInvokedUrlCommand *actionCommand;
+
+-(void)onActionReceived:(CDVInvokedUrlCommand *)command
+{
+      NSLog(@"cordova-plugin-jtm-webviewer: onActionReceived called");
+
+      actionCommand = command;
+
+      NSDictionary *returnDictionary = @{ @"ping": @"true" };
+
+      [self sendActionMessage: returnDictionary];
+}
+
+- (void) sendActionMessage: ( NSDictionary *) dictionary {
+
+      NSError *error;
+      NSData *jsonData = [NSJSONSerialization dataWithJSONObject: dictionary
+                                                         options:NSJSONWritingPrettyPrinted
+                                                           error:&error];
+      NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+
+      CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: jsonString];
+      [pluginResult setKeepCallbackAsBool:YES];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId: actionCommand.callbackId];
+}
+
+
 - (void) orientationChanged:(NSNotification *)note
 {
       NSLog(@"cordova-plugin-jtm-webviewer: createViewWithOptions orientationChanged");
@@ -122,8 +150,16 @@ NSString *password;
                   //Call Sync UIWebview
                   [self performSelector:@selector(webToNative_SyncSuccessful)];
             }
+            else if( [requestedFunction hasPrefix:@"ios:webToNative_TakePhoto"] )
+            {
 
+                  NSDictionary *returnDictionary = @{
+                                                     @"ping": @"false",
+                                                     @"action": @"MultiPhoto"
+                                                     };
 
+                  [self sendActionMessage: returnDictionary];
+            }
 
       }
 

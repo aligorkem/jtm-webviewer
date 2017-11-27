@@ -105,6 +105,9 @@ public class JTMWebViewer extends CordovaPlugin {
 
     }
 
+
+
+
     private String _url = "";
     private String _urlSync = "";
     private int _bottomMargin = 0;

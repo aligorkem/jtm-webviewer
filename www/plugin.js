@@ -8,6 +8,9 @@ var JTMWebViewer = {
       },
       hide: function (success, error, options) {
             cordova.exec(success, error, PLUGIN_NAME, 'hide', [ options ]);
+      },
+      onActionReceived: function (success, error, options) {
+            cordova.exec(success, error, PLUGIN_NAME, 'onActionReceived', [ options ]);
       }
 };
 
