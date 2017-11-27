@@ -1,294 +1,214 @@
-/**
- */
-package au.com.dcfm;
+#import "JTMWebViewer.h"
 
+#import <Cordova/CDVAvailability.h>
 
-import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaPlugin;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+@implementation JTMWebViewer
 
-import android.annotation.SuppressLint;
-import android.content.res.Configuration;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.util.DisplayMetrics;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
+- (void)pluginInitialize {
 
-import org.apache.cordova.PluginResult;
+      NSLog(@"cordova-plugin-jtm-webviewer: JTMWebViewer Initialized");
 
-import android.util.Log;
-import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Toast;
+      [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+      [[NSNotificationCenter defaultCenter]
+       addObserver:self selector:@selector(orientationChanged:)
+       name:UIDeviceOrientationDidChangeNotification
+       object:[UIDevice currentDevice]];
+}
 
-import java.util.Date;
+//bottom margin for webview, need to display ionic-tab
+NSInteger bottomMargin = 120;
 
-public class JTMWebViewer extends CordovaPlugin {
+//top margin for webview, need to display header
+NSInteger topMargin = 60;
 
-    private static final String TAG = "JTMWebViewer";
+//main web view
+UIWebView *webview = nil;
 
-    @Override
-    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-        super.initialize(cordova, webView);
-        main = new RelativeLayout(cordova.getActivity());
-    }
+//sync view for backgorund syncing
+UIWebView *syncWebview = nil;
 
+NSString *userId;
+NSString *password;
 
-    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
+-(void)show:(CDVInvokedUrlCommand *)command
+{
+      NSLog(@"cordova-plugin-jtm-webviewer: show called");
 
-        Log.d(TAG, "JTMWebViewer.execute");
-        Log.d(TAG, action);
+      if (!self.childView)
+      {
+            [self createViewWithOptions:command.arguments[0]];
+      }
 
-        if (action.equals("echo")) {
-            String phrase = args.getString(0);
-            // Echo back the first argument
-            Log.d(TAG, phrase);
-        } else if (action.equals("getDate")) {
-            // An example of returning data back to the web layer
-            final PluginResult result = new PluginResult(PluginResult.Status.OK, (new Date()).toString());
-            callbackContext.sendPluginResult(result);
-
-        } else if (action.equals("show")) {
-
-            String optionsStr = args.getString(0);
-            JSONObject options = null;
-
-            try {
-
-                options = new JSONObject(optionsStr);
-
-            } catch (Throwable t) {
-                Log.e("JTM", "Could not parse malformed JSON: \"" + optionsStr + "\"");
-            }
-
-            show(options);
-
-            // An example of returning data back to the web layer
-            final PluginResult result = new PluginResult(PluginResult.Status.OK, (new Date()).toString());
-            callbackContext.sendPluginResult(result);
-        } else if (action.equals("hide")) {
-
-            hide();
-
-            // An example of returning data back to the web layer
-            final PluginResult result = new PluginResult(PluginResult.Status.OK, (new Date()).toString());
-            callbackContext.sendPluginResult(result);
-        }
-        return true;
-    }
-
-
-    protected ViewGroup root; // original Cordova layout
-    protected RelativeLayout main; // new layout to support map
-    protected WebView techView;
-    protected WebView syncView;
-    private CallbackContext cCtx;
-
-    public void hide() {
-
-        cordova.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                techView.setVisibility(View.INVISIBLE);
-
-            }
-        });
-
-
-    }
-
-
-
-
-    private String _url = "";
-    private String _urlSync = "";
-    private int _bottomMargin = 0;
-    private int _topMargin = 0;
-    private String _userId = "";
-    private String _password = "";
-
-
-    public void show(final JSONObject options) {
-        try {
-
-            if( options != null ){
-
-                _url = options.getString("url");
-                _urlSync = options.getString("urlSync");
-                _userId = options.getString("userId");
-                _password = options.getString("password");
-                _bottomMargin = options.getInt("bottomMarginAndroid");
-                _topMargin = options.getInt("topMargin");
-
-            }
-
-            cordova.getActivity().runOnUiThread(new Runnable() {
-                @SuppressLint("JavascriptInterface")
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                @Override
-                public void run() {
-
-                    if (techView == null) {
-
-                        double latitude = 0, longitude = 0;
-                        //int height = 760;
-                        boolean atBottom = false;
-
-                        DisplayMetrics displayMetrics = new DisplayMetrics();
-                        cordova.getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                        int width = displayMetrics.widthPixels;
-                        int height = displayMetrics.heightPixels;
-
-
-                        techView = new WebView(cordova.getActivity());
-                        syncView = new WebView(cordova.getActivity());
-
-                        techView.setWebViewClient(new WebViewClient());
-                        techView.getSettings().setJavaScriptEnabled(true);
-                        techView.getSettings().setDatabaseEnabled(true);
-                        techView.getSettings().setDomStorageEnabled(true);
-
-                        techView.addJavascriptInterface(new JsInterface(main.getContext(), techView, syncView, _userId, _password), "JTMAndroid");
-
-
-                        //techView.loadUrl("http://54.153.177.241/hawk");
-                        techView.loadUrl(_url);
-
-                        FrameLayout layout = (FrameLayout) webView.getView().getParent();
-
-                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height - _bottomMargin);
-                        params.setMargins(0, 0, 0, 0);
-                        techView.setLayoutParams(params);
-                        layout.addView(techView);
-
-
-
-
-                        //syncView
-
-                        syncView.setWebViewClient(new WebViewClient());
-                        syncView.getSettings().setJavaScriptEnabled(true);
-                        syncView.getSettings().setDatabaseEnabled(true);
-                        syncView.getSettings().setDomStorageEnabled(true);
-
-                        syncView.addJavascriptInterface(new JsInterface(main.getContext(), techView, syncView, _userId, _password), "JTMAndroid");
-
-                        //syncView.loadUrl("http://54.153.177.241/hawk/page-sync.php");
-                        syncView.loadUrl(_urlSync);
-
-                        //FrameLayout syncLayout = (FrameLayout) webView.getView().getParent();
-                        //FrameLayout syncLayout = (FrameLayout) techView.getParent();
-
-                        //FrameLayout.LayoutParams syncParams = new FrameLayout.LayoutParams(400, 150);
-                        //FrameLayout.LayoutParams syncParams = new FrameLayout.LayoutParams(600, 450);
-                        FrameLayout.LayoutParams syncParams = new FrameLayout.LayoutParams(1, 1);
-                        syncParams.setMargins(0, 50, 0, 0);
-                        syncView.setLayoutParams(syncParams);
-
-                        techView.addView(syncView);
-
-
-                    } else {
-                        techView.setVisibility(View.VISIBLE);
-                    }
-
-
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            cCtx.error("MapKitPlugin::showMap(): An exception occured");
-        }
-
-
-    }
-
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        cordova.getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int width = displayMetrics.widthPixels;
-        int height = displayMetrics.heightPixels;
-
-
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height - 200);
-        params.setMargins(0, 0, 0, 0);
-        techView.setLayoutParams(params);
-
-
-        // Checks the orientation of the screen
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-
-        }
-    }
-
-
+      self.childView.hidden = NO;
+      [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
 
-//techView.addJavascriptInterface(new JsInterface(), "AndroidApp");
-//techView.loadUrl("javascript:doStringToMyAndroid('This string from android')")
+CDVInvokedUrlCommand *actionCommand;
+
+-(void)onActionReceived:(CDVInvokedUrlCommand *)command
+{
+      NSLog(@"cordova-plugin-jtm-webviewer: onActionReceived called");
+
+      actionCommand = command;
+
+      NSDictionary *returnDictionary = @{ @"ping": @"true" };
+
+      [self sendActionMessage: returnDictionary];
+}
+
+- (void) sendActionMessage: ( NSDictionary *) dictionary {
+      
+      NSError *error;
+      NSData *jsonData = [NSJSONSerialization dataWithJSONObject: dictionary
+                                                         options:NSJSONWritingPrettyPrinted
+                                                           error:&error];
+      NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+      
+      CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: jsonString];
+      [pluginResult setKeepCallbackAsBool:YES];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId: actionCommand.callbackId];
+}
 
 
-//techView.evaluateJavascript("enable();", null);
+- (void) orientationChanged:(NSNotification *)note
+{
+      NSLog(@"cordova-plugin-jtm-webviewer: createViewWithOptions orientationChanged");
+
+      self.childView.frame = CGRectMake(0 , 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - bottomMargin);
+}
+
+- (void)createViewWithOptions:(NSDictionary *)options {
+      //todo: check mandatory params that
+
+      NSLog(@"cordova-plugin-jtm-webviewer: createViewWithOptions called, this should be called only once");
 
 
-                        /*
-                        String myJsString = "this";
-                        techView.evaluateJavascript("(function() { return fromAndroid(); } )();", new ValueCallback<String>() {
-                            @Override
-                            public void onReceiveValue(String s) {
-                                Log.d("CUSTOM_FUNCTION", s); // Returns the value from the function
-
-                                //webView.loadUrl("javascript:autoLogin('itglobal1', 'password', 0)");
-                            }
-                        });
-*/
+      //This is the Designated Initializer
+      NSString *url = [NSString stringWithFormat:@"%@", [options objectForKey:@"url"]];
+      NSString *urlSync = [NSString stringWithFormat:@"%@", [options objectForKey:@"urlSync"]];
+      bottomMargin = [[options objectForKey:@"bottomMarginIOS"] integerValue];
+      topMargin = [[options objectForKey:@"topMargin"] integerValue];
+      userId = [NSString stringWithFormat:@"%@", [options objectForKey:@"userId"]];
+      password = [NSString stringWithFormat:@"%@", [options objectForKey:@"password"]];
 
 
+      // defaults
+      float height = [UIScreen mainScreen].bounds.size.height - bottomMargin; //get screen height
+      float width = [UIScreen mainScreen].bounds.size.width; //get screen width
+      float x = 0;
+      float y = topMargin; //this is header margin
+
+      self.childView = [[UIView alloc] initWithFrame:CGRectMake(x,y,width,height)];
+      [self.childView setBackgroundColor:[UIColor blueColor]];
+
+      //initializse webview
+      webview = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, 424,468)];
+      webview.frame = CGRectMake(0, 0, self.childView.frame.size.width, self.childView.frame.size.height);
+      webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+      [webview loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
 
 
-                    /*RelativeLayout.LayoutParams paramsMain = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, height);
-                    paramsMain.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-                    paramsMain.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                    main.setLayoutParams(paramsMain);
+      //initialise syncWebview
+      //syncWebview = [[UIWebView alloc]initWithFrame:CGRectMake(500, 0, 300, 200)];
+      syncWebview = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, 1, 1)];
+      [syncWebview loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString:urlSync]]];
+
+      webview.delegate = self;
+      //self.syncWebView.delegate = self;
 
 
-                    cordova.getActivity().setContentView(main);
+      [self.childView addSubview:webview];
+      [self.childView addSubview:syncWebview];
 
-                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, height);
-                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-                    params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                    techView.setLayoutParams(params);
-
+      [ [ [ self viewController ] view ] addSubview:self.childView];
+}
 
 
 
-                    main.addView(techView);
-*/
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+{
+      NSLog(@"cordova-plugin-jtm-webviewer: webView.shouldStartLoadWithRequest");
+
+      NSString *absoluteString = [[request URL] absoluteString];
+      if ([absoluteString hasPrefix:@"ios:"]) {
+            NSLog( @"%@", [NSString stringWithFormat:@"URL: %@'", absoluteString] );
+
+            NSString *requestedFunction = [[request URL] absoluteString];
+            if( [requestedFunction hasPrefix:@"ios:webToNative_AutoLogin"] )
+            {
+                  [self performSelector:@selector(webToNative_AutoLogin)];
+            }
+            else if( [requestedFunction hasPrefix:@"ios:webToNative_SyncAll"] )
+            {
+                  //Call Sync UIWebview
+                  [self performSelector:@selector(webToNative_SyncAll)];
+            }
+            else if( [requestedFunction hasPrefix:@"ios:webToNative_SyncSuccessful"] )
+            {
+                  //Call Sync UIWebview
+                  [self performSelector:@selector(webToNative_SyncSuccessful)];
+            }
+            else if( [requestedFunction hasPrefix:@"ios:webToNative_TakePhoto"] )
+            {
+                  NSString *jobid = [requestedFunction stringByReplacingOccurrencesOfString:@"ios:webToNative_TakePhoto/" withString:@""];
+                  
+                  NSDictionary *returnDictionary = @{
+                                                     @"ping": @"false",
+                                                     @"action": @"Photo",
+                                                     @"jobId": jobid
+                                                     };
+                  [self sendActionMessage: returnDictionary];
+            }
+
+      }
+
+      return YES;
+}
 
 
-/*
-                    FrameLayout layout = (FrameLayout) webView.getView().getParent();
+- (void)hide:(CDVInvokedUrlCommand *)command
+{
+      NSLog(@"cordova-plugin-jtm-webviewer: hide");
 
-                    TextView textView = new TextView(layout.getContext());
-                    textView.setBackgroundColor(Color.BLUE);
-                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(500, 500);
-                    params.setMargins(100, 100, 100, 100);
-                    textView.setLayoutParams(params);
-                    layout.addView(textView);
+      if (self.childView.hidden==YES)
+      {
+            return;
+      }
 
-*/
+      self.childView.hidden = YES;
+      [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+
+
+
+
+
+
+
+- (void)webToNative_SyncAll
+{
+      //Call SyncUIWebView
+      [syncWebview stringByEvaluatingJavaScriptFromString:@"SYNC();"];
+}
+
+- (void)webToNative_SyncSuccessful
+{
+      //Call SyncUIWebView
+      [webview stringByEvaluatingJavaScriptFromString:@"SyncSuccessful();"];
+}
+
+
+- (void)webToNative_AutoLogin
+{
+
+            NSString *version = @"0";
+
+            NSString *autoLoginCallBack = [NSString stringWithFormat:@"autoLogin('%@','%@','%@')", userId, password, version];
+            NSString *returnvalue = [webview stringByEvaluatingJavaScriptFromString:autoLoginCallBack];
+}
+
+
+@end
