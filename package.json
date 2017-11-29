@@ -21,7 +21,7 @@
   "engines": [
     {
       "name": "cordova",
-      "version": ">=7.1.0"
+      "version": ">=7.4.0"
     }
   ],
   "author": "Ali Gorkem",
