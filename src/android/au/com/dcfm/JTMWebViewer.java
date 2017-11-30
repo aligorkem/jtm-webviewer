@@ -97,7 +97,9 @@ public class JTMWebViewer extends CordovaPlugin {
             @Override
             public void run() {
 
-                techView.setVisibility(View.INVISIBLE);
+                if( techView != null ){
+                    techView.setVisibility(View.INVISIBLE);
+                }
 
             }
         });
@@ -159,7 +161,6 @@ public class JTMWebViewer extends CordovaPlugin {
                         techView.addJavascriptInterface(new JsInterface(main.getContext(), techView, syncView, _userId, _password), "JTMAndroid");
 
 
-                        //techView.loadUrl("http://54.153.177.241/hawk");
                         techView.loadUrl(_url);
 
                         FrameLayout layout = (FrameLayout) webView.getView().getParent();
@@ -169,11 +170,7 @@ public class JTMWebViewer extends CordovaPlugin {
                         techView.setLayoutParams(params);
                         layout.addView(techView);
 
-
-
-
                         //syncView
-
                         syncView.setWebViewClient(new WebViewClient());
                         syncView.getSettings().setJavaScriptEnabled(true);
                         syncView.getSettings().setDatabaseEnabled(true);
@@ -181,14 +178,8 @@ public class JTMWebViewer extends CordovaPlugin {
 
                         syncView.addJavascriptInterface(new JsInterface(main.getContext(), techView, syncView, _userId, _password), "JTMAndroid");
 
-                        //syncView.loadUrl("http://54.153.177.241/hawk/page-sync.php");
                         syncView.loadUrl(_urlSync);
 
-                        //FrameLayout syncLayout = (FrameLayout) webView.getView().getParent();
-                        //FrameLayout syncLayout = (FrameLayout) techView.getParent();
-
-                        //FrameLayout.LayoutParams syncParams = new FrameLayout.LayoutParams(400, 150);
-                        //FrameLayout.LayoutParams syncParams = new FrameLayout.LayoutParams(600, 450);
                         FrameLayout.LayoutParams syncParams = new FrameLayout.LayoutParams(1, 1);
                         syncParams.setMargins(0, 50, 0, 0);
                         syncView.setLayoutParams(syncParams);
@@ -237,58 +228,3 @@ public class JTMWebViewer extends CordovaPlugin {
 
 
 }
-
-
-//techView.addJavascriptInterface(new JsInterface(), "AndroidApp");
-//techView.loadUrl("javascript:doStringToMyAndroid('This string from android')")
-
-
-//techView.evaluateJavascript("enable();", null);
-
-
-                        /*
-                        String myJsString = "this";
-                        techView.evaluateJavascript("(function() { return fromAndroid(); } )();", new ValueCallback<String>() {
-                            @Override
-                            public void onReceiveValue(String s) {
-                                Log.d("CUSTOM_FUNCTION", s); // Returns the value from the function
-
-                                //webView.loadUrl("javascript:autoLogin('itglobal1', 'password', 0)");
-                            }
-                        });
-*/
-
-
-
-
-                    /*RelativeLayout.LayoutParams paramsMain = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, height);
-                    paramsMain.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-                    paramsMain.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                    main.setLayoutParams(paramsMain);
-
-
-                    cordova.getActivity().setContentView(main);
-
-                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, height);
-                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-                    params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                    techView.setLayoutParams(params);
-
-
-
-
-                    main.addView(techView);
-*/
-
-
-/*
-                    FrameLayout layout = (FrameLayout) webView.getView().getParent();
-
-                    TextView textView = new TextView(layout.getContext());
-                    textView.setBackgroundColor(Color.BLUE);
-                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(500, 500);
-                    params.setMargins(100, 100, 100, 100);
-                    textView.setLayoutParams(params);
-                    layout.addView(textView);
-
-*/
