@@ -1,33 +1,30 @@
 {
-  "name": "cordova-plugin-jtm-webviewer",
   "version": "1.0.0",
+  "name": "cordova-plugin-jtm-webviewer",
+  "cordova_name": "cordova-plugin-jtm-webviewer",
   "description": "Native WebViewer Component for JTM",
-  "cordova": {
-    "id": "cordova-plugin-jtm-webviewer",
-    "platforms": [
-      "ios",
-      "android"
-    ]
-  },
+  "author": "Ali Gorkem",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/aligorkem/jtm-webviewer.git"
   },
-  "keywords": [
-    "jtm",
-    "webviewer",
-    "native webviewer"
-  ],
-  "engines": [
-    {
-      "name": "cordova",
-      "version": ">=7.1.0"
+  "cordova": {
+    "id": "cordova-plugin-jtm-webviewer",
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "plugins": {
+      "cordova-plugin-jtm-webviewer": {}
     }
-  ],
-  "author": "Ali Gorkem",
-  "license": "Apache 2.0",
-  "bugs": {
-    "url": "https://github.com/aligorkem/jtm-webviewer/issues"
   },
-  "homepage": "https://github.com/aligorkem/jtm-webviewer"
+  "issue": "https://github.com/aligorkem/jtm-webviewer/issues",
+  "scripts": {
+    "test": "npm install && npm run-script jshint && cordova prepare && jasmine",
+    "jshint": "jshint plugins/cordova-custom-config/hooks"
+  },
+  "dependencies": {
+    "cordova-plugin-jtm-webviewer": "*"
+  }
 }
