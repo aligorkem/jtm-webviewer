@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/aligorkem/jtm-webviewer"
+    "url": "git://github.com/aligorkem/jtm-webviewer"
   },
   "bugs": {
     "url": "https://github.com/aligorkem/jtm-webviewer/issues"
