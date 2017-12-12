@@ -11,7 +11,10 @@ var JTMWebViewer = {
       },
       onActionReceived: function (success, error, options) {
             cordova.exec(success, error, PLUGIN_NAME, 'onActionReceived', [ options ]);
-      }
+      },
+      sendAction: function (success, error, options) {
+            cordova.exec(success, error, PLUGIN_NAME, 'sendAction', [ options ]);
+      },
 };
 
 module.exports = JTMWebViewer;

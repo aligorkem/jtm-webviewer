@@ -46,6 +46,13 @@ NSString *password;
 
 CDVInvokedUrlCommand *actionCommand;
 
+-(void)sendAction:(CDVInvokedUrlCommand *)command
+{
+      NSLog(@"cordova-plugin-jtm-webviewer: sendAction called");
+      [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+
 -(void)onActionReceived:(CDVInvokedUrlCommand *)command
 {
       NSLog(@"cordova-plugin-jtm-webviewer: onActionReceived called");
