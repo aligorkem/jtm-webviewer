@@ -49,6 +49,27 @@ CDVInvokedUrlCommand *actionCommand;
 -(void)sendAction:(CDVInvokedUrlCommand *)command
 {
       NSLog(@"cordova-plugin-jtm-webviewer: sendAction called");
+
+      if( command != NULL && command.arguments != NULL && command.arguments.count > 0 ){
+            NSArray *arguments = command.arguments[0];
+
+            if( arguments != NULL && arguments.count > 0 ){
+                  NSDictionary* options = [command.arguments objectAtIndex:0];
+
+                  NSLog(@"Options: %@", options);
+                  NSNumber *action =  [NSNumber numberWithLong:[options objectForKey:@"action"]];
+                  NSNumber *clearCache = [NSNumber numberWithLong:1];
+
+                  //CLEAR CACHE
+                  if( [action compare: clearCache] )
+                 {
+                       [self nativeToWeb_ClearCache];
+                 }
+
+            }
+
+      }
+
       [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
@@ -77,12 +98,14 @@ CDVInvokedUrlCommand *actionCommand;
       [self.commandDelegate sendPluginResult:pluginResult callbackId: actionCommand.callbackId];
 }
 
-
 - (void) orientationChanged:(NSNotification *)note
 {
       NSLog(@"cordova-plugin-jtm-webviewer: createViewWithOptions orientationChanged");
 
-      self.childView.frame = CGRectMake(0 , 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - bottomMargin);
+      if( self.childView != NULL ){
+            self.childView.frame = CGRectMake(0 , 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - bottomMargin);
+      }
+
 }
 
 - (void)createViewWithOptions:(NSDictionary *)options {
@@ -99,6 +122,9 @@ CDVInvokedUrlCommand *actionCommand;
       userId = [NSString stringWithFormat:@"%@", [options objectForKey:@"userId"]];
       password = [NSString stringWithFormat:@"%@", [options objectForKey:@"password"]];
 
+
+      NSLog( @"cordova-plugin-jtm-webviewer TECH PORTAL: %@", url );
+      NSLog( @"cordova-plugin-jtm-webviewer SYNC: %@", urlSync );
 
       // defaults
       float height = [UIScreen mainScreen].bounds.size.height - bottomMargin; //get screen height
@@ -192,6 +218,10 @@ CDVInvokedUrlCommand *actionCommand;
 
 
 
+- (void)nativeToWeb_ClearCache
+{
+      [webview stringByEvaluatingJavaScriptFromString:@"eagle.ClearCache();"];
+}
 
 
 - (void)webToNative_SyncAll
