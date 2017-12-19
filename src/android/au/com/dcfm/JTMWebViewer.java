@@ -2,7 +2,6 @@
  */
 package au.com.dcfm;
 
-
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -45,6 +44,19 @@ public class JTMWebViewer extends CordovaPlugin {
 
         Log.d(TAG, "JTMWebViewer.execute");
         Log.d(TAG, action);
+        JSONObject options = null;
+        String optionsStr = "";
+
+        if( args != null && args.length() > 0 ){
+            try {
+                optionsStr = args.getString(0);
+                options = new JSONObject(optionsStr);
+
+            } catch (Throwable t) {
+                Log.e("JTM", "Could not parse malformed JSON: \"" + optionsStr + "\"");
+            }
+        }
+
 
         if (action.equals("echo")) {
             String phrase = args.getString(0);
@@ -57,17 +69,6 @@ public class JTMWebViewer extends CordovaPlugin {
 
         } else if (action.equals("show")) {
 
-            String optionsStr = args.getString(0);
-            JSONObject options = null;
-
-            try {
-
-                options = new JSONObject(optionsStr);
-
-            } catch (Throwable t) {
-                Log.e("JTM", "Could not parse malformed JSON: \"" + optionsStr + "\"");
-            }
-
             show(options);
 
             // An example of returning data back to the web layer
@@ -76,6 +77,16 @@ public class JTMWebViewer extends CordovaPlugin {
         } else if (action.equals("hide")) {
 
             hide();
+
+
+
+            // An example of returning data back to the web layer
+            final PluginResult result = new PluginResult(PluginResult.Status.OK, (new Date()).toString());
+            callbackContext.sendPluginResult(result);
+        }
+        else if (action.equals("sendAction")) {
+
+            sendAction(options);
 
             // An example of returning data back to the web layer
             final PluginResult result = new PluginResult(PluginResult.Status.OK, (new Date()).toString());
@@ -107,6 +118,43 @@ public class JTMWebViewer extends CordovaPlugin {
 
     }
 
+
+    public void sendAction(final JSONObject options) {
+
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run()  {
+
+                try
+                {
+                    String action = options.getString("action");
+                    //String action2 = options.getString("action");
+
+                    if( action != null && action.equals("1") ){
+
+                        //clear cache
+                        action_ClearCache();
+                    }
+
+                }
+                catch(Exception ex){
+
+                }
+
+            }
+        });
+
+
+    }
+
+
+
+
+    public void action_ClearCache() {
+
+        this.techView.loadUrl("javascript:eagle.ClearCache();");
+
+    }
 
 
 
