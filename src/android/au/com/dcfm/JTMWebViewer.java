@@ -2,6 +2,7 @@
  */
 package au.com.dcfm;
 
+
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -16,6 +17,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -206,6 +208,23 @@ public class JTMWebViewer extends CordovaPlugin {
                         techView.getSettings().setDatabaseEnabled(true);
                         techView.getSettings().setDomStorageEnabled(true);
 
+                        //OFFLINE CACHE
+                        techView.getSettings().setAppCacheMaxSize( 5 * 1024 * 1024 ); // 5MB
+                        techView.getSettings().setAppCachePath( main.getContext().getCacheDir().getAbsolutePath() + "/cacheTech" );
+                        techView.getSettings().setAllowFileAccess( true );
+                        techView.getSettings().setAppCacheEnabled( true );
+                        //techView.getSettings().setJavaScriptEnabled( true );
+                        //techView.getSettings().setCacheMode( WebSettings.LOAD_DEFAULT ); // load online by default
+                        techView.getSettings().setCacheMode( WebSettings.LOAD_CACHE_ELSE_NETWORK );
+
+//                        if ( !isNetworkAvailable() ) { // loading offline
+//
+//                        }
+
+
+
+
+
                         techView.addJavascriptInterface(new JsInterface(main.getContext(), techView, syncView, _userId, _password), "JTMAndroid");
 
 
@@ -223,6 +242,15 @@ public class JTMWebViewer extends CordovaPlugin {
                         syncView.getSettings().setJavaScriptEnabled(true);
                         syncView.getSettings().setDatabaseEnabled(true);
                         syncView.getSettings().setDomStorageEnabled(true);
+
+                        syncView.getSettings().setAppCacheMaxSize( 5 * 1024 * 1024 ); // 5MB
+                        syncView.getSettings().setAppCachePath( main.getContext().getCacheDir().getAbsolutePath() + "/cacheSync" );
+                        syncView.getSettings().setAllowFileAccess( true );
+                        syncView.getSettings().setAppCacheEnabled( true );
+                        //techView.getSettings().setJavaScriptEnabled( true );
+                        //techView.getSettings().setCacheMode( WebSettings.LOAD_DEFAULT ); // load online by default
+                        syncView.getSettings().setCacheMode( WebSettings.LOAD_CACHE_ELSE_NETWORK );
+
 
                         syncView.addJavascriptInterface(new JsInterface(main.getContext(), techView, syncView, _userId, _password), "JTMAndroid");
 
