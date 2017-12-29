@@ -192,7 +192,17 @@ CDVInvokedUrlCommand *actionCommand;
                                                      };
 
                   [self sendActionMessage: returnDictionary];
+            }else if( [requestedFunction hasPrefix:@"ios:webToNative_Action"] )
+            {
+                  NSDictionary *returnDictionary = @{
+                                                     @"ping": @"false",
+                                                     @"action": @"MultiPhoto",
+                                                     @"value1": @"0"
+                                                     };
+
+                  [self sendActionMessage: returnDictionary];
             }
+
 
       }
 
