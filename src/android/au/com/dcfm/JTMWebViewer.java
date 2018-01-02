@@ -93,16 +93,31 @@ public class JTMWebViewer extends CordovaPlugin {
             // An example of returning data back to the web layer
             final PluginResult result = new PluginResult(PluginResult.Status.OK, (new Date()).toString());
             callbackContext.sendPluginResult(result);
+        }else if( action.equals("onActionReceived") ){
+
+            onActionReceivedCallback = callbackContext;
+
+            String returnValue = "{\"ping\":\"true\"}";
+            PluginResult result = new PluginResult(PluginResult.Status.OK, (returnValue));
+            result.setKeepCallback(true);
+            onActionReceivedCallback.sendPluginResult(result);
+
         }
         return true;
     }
 
+    private CallbackContext onActionReceivedCallback = null;
 
     protected ViewGroup root; // original Cordova layout
     protected RelativeLayout main; // new layout to support map
     protected WebView techView;
     protected WebView syncView;
     private CallbackContext cCtx;
+
+
+
+
+
 
     public void hide() {
 
@@ -222,10 +237,7 @@ public class JTMWebViewer extends CordovaPlugin {
 //                        }
 
 
-
-
-
-                        techView.addJavascriptInterface(new JsInterface(main.getContext(), techView, syncView, _userId, _password), "JTMAndroid");
+                        techView.addJavascriptInterface(new JsInterface(main.getContext(), onActionReceivedCallback , techView, syncView, _userId, _password), "JTMAndroid");
 
 
                         techView.loadUrl(_url);
@@ -252,7 +264,7 @@ public class JTMWebViewer extends CordovaPlugin {
                         syncView.getSettings().setCacheMode( WebSettings.LOAD_CACHE_ELSE_NETWORK );
 
 
-                        syncView.addJavascriptInterface(new JsInterface(main.getContext(), techView, syncView, _userId, _password), "JTMAndroid");
+                        syncView.addJavascriptInterface(new JsInterface(main.getContext(), onActionReceivedCallback, techView, syncView, _userId, _password), "JTMAndroid");
 
                         syncView.loadUrl(_urlSync);
 
