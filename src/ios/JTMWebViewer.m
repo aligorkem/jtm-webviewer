@@ -62,9 +62,9 @@ CDVInvokedUrlCommand *actionCommand;
 
                   //CLEAR CACHE
                   if( [action compare: clearCache] )
-                 {
-                       [self nativeToWeb_ClearCache];
-                 }
+                  {
+                        [self nativeToWeb_ClearCache];
+                  }
 
             }
 
@@ -192,12 +192,24 @@ CDVInvokedUrlCommand *actionCommand;
                                                      };
 
                   [self sendActionMessage: returnDictionary];
-            }else if( [requestedFunction hasPrefix:@"ios:webToNative_Action"] )
+            }else if( [requestedFunction hasPrefix:@"ios:webToNative_Action_TakePhoto"] )
             {
                   NSDictionary *returnDictionary = @{
                                                      @"ping": @"false",
                                                      @"action": @"MultiPhoto",
                                                      @"value1": @"0"
+                                                     };
+
+                  [self sendActionMessage: returnDictionary];
+            }else if( [requestedFunction hasPrefix:@"ios:webToNative_Action_OpenDocument"] )
+            {
+                  NSString *jobid = [requestedFunction stringByReplacingOccurrencesOfString:@"ios:webToNative_Action_OpenDocument_"
+                                                       withString:@""];
+
+                  NSDictionary *returnDictionary = @{
+                                                     @"ping": @"false",
+                                                     @"action": @"OpenDocument",
+                                                     @"jobid": jobid
                                                      };
 
                   [self sendActionMessage: returnDictionary];
@@ -250,10 +262,10 @@ CDVInvokedUrlCommand *actionCommand;
 - (void)webToNative_AutoLogin
 {
 
-            NSString *version = @"0";
+      NSString *version = @"0";
 
-            NSString *autoLoginCallBack = [NSString stringWithFormat:@"autoLogin('%@','%@','%@')", userId, password, version];
-            NSString *returnvalue = [webview stringByEvaluatingJavaScriptFromString:autoLoginCallBack];
+      NSString *autoLoginCallBack = [NSString stringWithFormat:@"autoLogin('%@','%@','%@')", userId, password, version];
+      NSString *returnvalue = [webview stringByEvaluatingJavaScriptFromString:autoLoginCallBack];
 }
 
 
@@ -290,3 +302,4 @@ CDVInvokedUrlCommand *actionCommand;
  [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
  }
  */
+
