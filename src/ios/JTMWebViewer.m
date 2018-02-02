@@ -306,7 +306,7 @@ cdvinvokedurlcommand *actioncommand;
     nsstring *autologincallback = [nsstring stringwithformat:@"autologin('%@','%@','%@')", userid, password, version];
     nsstring *returnvalue = [webview stringbyevaluatingjavascriptfromstring:autologincallback];
 }
-
+//
 
 @end
 
