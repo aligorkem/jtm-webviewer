@@ -244,6 +244,25 @@ CDVInvokedUrlCommand *actionCommand;
             [self sendActionMessage: returnDictionary];
         }
         
+        //Send All Other Actions if it starts with ios:webToNative_
+        else if( [requestedFunction hasPrefix:@"ios:webToNative_"] )
+        {
+            NSArray *items = [requestedFunction componentsSeparatedByString:@"_"];
+            NSString *actionName = [items objectAtIndex:1];
+            NSString *actionValue = @"";
+            
+            if( items.count > 2 ){
+                actionValue = [items objectAtIndex:2];
+            }
+            
+            NSDictionary *returnDictionary = @{
+                                               @"ping": @"false",
+                                               @"action": actionName,
+                                               @"value": actionValue
+                                               };
+            
+            [self sendActionMessage: returnDictionary];
+        }
         
     }
     
