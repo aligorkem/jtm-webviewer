@@ -163,7 +163,9 @@ public class JsInterface {
     public void onActionReceived(String action, String jobid, String apptid) {
         Log.d(TAG, "onActionReceived");
 
+
         String returnValue = "{";
+        returnValue = returnValue + "\"value\":\""+jobid+"\",";
         returnValue = returnValue + "\"jobid\":\""+jobid+"\",";
         returnValue = returnValue + "\"action\":\""+action+"\",";
         returnValue = returnValue + "\"apptid\":\""+apptid+"\",";
