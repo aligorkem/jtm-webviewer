@@ -334,6 +334,7 @@ CDVInvokedUrlCommand *actionCommand;
 
 
 /*
+aa
  //NSString *url=@"http://54.153.177.241/swan";
  
  //- (void)echo:(CDVInvokedUrlCommand *)command;
