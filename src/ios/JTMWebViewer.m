@@ -245,9 +245,9 @@ CDVInvokedUrlCommand *actionCommand;
         }
         
         //Send All Other Actions if it starts with ios:webToNative_
-        else if( [requestedFunction hasPrefix:@"ios:webToNative_"] )
+        else if( [requestedFunction hasPrefix:@"ios:webToNative~"] )
         {
-            NSArray *items = [requestedFunction componentsSeparatedByString:@"_"];
+            NSArray *items = [requestedFunction componentsSeparatedByString:@"~"];
             NSString *actionName = [items objectAtIndex:1];
             NSString *actionValue = @"";
             
