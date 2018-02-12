@@ -326,9 +326,11 @@ public class JTMWebViewer extends CordovaPlugin {
         int height = displayMetrics.heightPixels;
 
 
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height - 200);
-        params.setMargins(0, 0, 0, 0);
-        techView.setLayoutParams(params);
+        if( techView != null ){
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height - 200);
+            params.setMargins(0, 0, 0, 0);
+            techView.setLayoutParams(params);
+        }
 
 
         // Checks the orientation of the screen
