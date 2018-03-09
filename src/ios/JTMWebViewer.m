@@ -79,12 +79,31 @@ CDVInvokedUrlCommand *actionCommand;
                 [self nativeToWeb_OnClicked_Close_Confirm];
                 
             }
-            
+            //CALL CUSTOM FUNCTION
+            else if( action == 4 ){
+
+                NSString *function = [options objectForKey:@"function"];
+                NSString *message = [options objectForKey:@"message"];
+                NSString *params = [options objectForKey:@"params"];
+
+
+                [self nativeToWeb_OnClicked_Call_Function:function message:message params:params];
+
+            }
+
         }
-        
+
     }
-    
+
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+
+- (void)nativeToWeb_OnClicked_Call_Function:(NSString *)function message: (NSString *)message params:(NSString *)params
+{
+
+    NSString *functionName = [NSString stringWithFormat:@"nativeToWeb_%@('%@', '%@')", function, message, params];
+    NSString *returnvalue = [webview stringByEvaluatingJavaScriptFromString:functionName];
 }
 
 
