@@ -29,6 +29,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import java.net.URLEncoder;
+import java.util.Base64;
 import java.util.Date;
 
 public class JTMWebViewer extends CordovaPlugin {
@@ -45,6 +47,7 @@ public class JTMWebViewer extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
 
         Log.d(TAG, "JTMWebViewer.execute");
+        Log.d(TAG, "JTMWebViewer.execute: " + action);
         Log.d(TAG, action);
         JSONObject options = null;
         String optionsStr = "";
@@ -52,10 +55,12 @@ public class JTMWebViewer extends CordovaPlugin {
         if( args != null && args.length() > 0 ){
             try {
                 optionsStr = args.getString(0);
-                options = new JSONObject(optionsStr);
+
+                if( optionsStr != null && optionsStr.toString() != "null" )
+                    options = new JSONObject(optionsStr);
 
             } catch (Throwable t) {
-                Log.e("JTM", "Could not parse malformed JSON: \"" + optionsStr + "\"");
+                Log.e(TAG, "JTMWebViewer Exception Could not parse malformed JSON: \"" + optionsStr + "\"");
             }
         }
 
@@ -138,6 +143,8 @@ public class JTMWebViewer extends CordovaPlugin {
 
     public void sendAction(final JSONObject options) {
 
+        Log.d(TAG, "sendAction");
+
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run()  {
@@ -148,6 +155,8 @@ public class JTMWebViewer extends CordovaPlugin {
                     //String action2 = options.getString("action");
 
                     if( action != null ){
+
+                        Log.d(TAG, "sendAction: " + action);
 
                         if( action.equals("1") ){
 
@@ -165,13 +174,19 @@ public class JTMWebViewer extends CordovaPlugin {
                             //close confirm
                             action_CloseConfirm();
 
+                        }else if ( action.equals("4") && options != null ){
+
+                            //call custom js function with params
+                            //{"action":4,"function":"OnPhotoTaken_Report","params":400123,"message":"TEST"}
+                            action_CallCustomFunction(options);
+
                         }
 
                     }
 
                 }
                 catch(Exception ex){
-
+                    Log.e(TAG, "JTMWebViewer Exception: " + ex.toString() );
                 }
 
             }
@@ -181,6 +196,19 @@ public class JTMWebViewer extends CordovaPlugin {
     }
 
 
+
+    public void action_CallCustomFunction(final JSONObject options) throws Exception{
+
+        String functionName = options.getString("function");
+        String params = options.getString("params");
+        String message = options.getString("message");
+
+        if( message != null && message.indexOf("data:") != -1 )
+            message = URLEncoder.encode(message, "UTF-8");
+
+        String customFunction = "javascript:nativeToWeb_"+ functionName + "('"+message+"','"+params+"');";
+        this.techView.loadUrl(customFunction);
+    }
 
 
     public void action_ClearCache() {
