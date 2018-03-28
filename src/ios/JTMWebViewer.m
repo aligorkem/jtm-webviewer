@@ -168,25 +168,29 @@ CDVInvokedUrlCommand *actionCommand;
     self.childView = [[UIView alloc] initWithFrame:CGRectMake(x,y,width,height)];
     [self.childView setBackgroundColor:[UIColor blueColor]];
     
-    //initializse webview
+    //initialize webview
     webview = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, 424,468)];
     webview.frame = CGRectMake(0, 0, self.childView.frame.size.width, self.childView.frame.size.height);
     webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [webview loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
-    
-    
+    //[webview loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
+    [webview loadRequest: [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy: NSURLRequestReturnCacheDataElseLoad timeoutInterval: 100.0]];
+
+    //NSURLRequestUseProtocolCachePolicy
+
+    //[NSURLRequest requestWithURL:[NSURL URLWithString:reqString] cachePolicy:NSURLRequestReturnCacheDataDontLoad timeoutInterval: 10.0];
+
     //initialise syncWebview
     //syncWebview = [[UIWebView alloc]initWithFrame:CGRectMake(500, 0, 300, 200)];
     syncWebview = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, 1, 1)];
     [syncWebview loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString:urlSync]]];
-    
+
     webview.delegate = self;
     //self.syncWebView.delegate = self;
-    
-    
+
+
     [self.childView addSubview:webview];
     [self.childView addSubview:syncWebview];
-    
+
     [ [ [ self viewController ] view ] addSubview:self.childView];
 }
 
@@ -196,12 +200,15 @@ CDVInvokedUrlCommand *actionCommand;
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSLog(@"cordova-plugin-jtm-webviewer: webView.shouldStartLoadWithRequest");
-    
     NSString *absoluteString = [[request URL] absoluteString];
-    if ([absoluteString hasPrefix:@"ios:"]) {
+
+    if( absoluteString != nil )
         NSLog( @"%@", [NSString stringWithFormat:@"URL: %@'", absoluteString] );
-        
+
+    if ([absoluteString hasPrefix:@"ios:"]) {
         NSString *requestedFunction = [[request URL] absoluteString];
+        NSLog( @"%@", [NSString stringWithFormat:@"requestedFunction: %@'", requestedFunction] );
+
         if( [requestedFunction hasPrefix:@"ios:webToNative_AutoLogin"] )
         {
             [self performSelector:@selector(webToNative_AutoLogin)];
