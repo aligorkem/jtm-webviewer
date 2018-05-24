@@ -148,50 +148,58 @@ CDVInvokedUrlCommand *actionCommand;
     
     
     //This is the Designated Initializer
-    NSString *url = [NSString stringWithFormat:@"%@", [options objectForKey:@"url"]];
+    NSString *urlTechPortal = [NSString stringWithFormat:@"%@", [options objectForKey:@"url"]];
     NSString *urlSync = [NSString stringWithFormat:@"%@", [options objectForKey:@"urlSync"]];
     bottomMargin = [[options objectForKey:@"bottomMarginIOS"] integerValue];
     topMargin = [[options objectForKey:@"topMargin"] integerValue];
     userId = [NSString stringWithFormat:@"%@", [options objectForKey:@"userId"]];
     password = [NSString stringWithFormat:@"%@", [options objectForKey:@"password"]];
-    
-    
-    NSLog( @"cordova-plugin-jtm-webviewer TECH PORTAL: %@", url );
+
+    // urlTechPortal = @"http://jt.itglobal-systems.net/swan";
+    // urlTechPortal = @"http://54.153.177.241/hawk";
+    urlTechPortal = @"http://jt.itglobal-systems.net/hawk";
+
+
+    NSLog( @"cordova-plugin-jtm-webviewer TECH PORTAL: %@", urlTechPortal );
     NSLog( @"cordova-plugin-jtm-webviewer SYNC: %@", urlSync );
-    
+
     // defaults
     float height = [UIScreen mainScreen].bounds.size.height - bottomMargin; //get screen height
     float width = [UIScreen mainScreen].bounds.size.width; //get screen width
     float x = 0;
     float y = topMargin; //this is header margin
-    
+
     self.childView = [[UIView alloc] initWithFrame:CGRectMake(x,y,width,height)];
     [self.childView setBackgroundColor:[UIColor blueColor]];
-    
-    //initialize webview
+
+    //initializse webview
     webview = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, 424,468)];
+    webview.delegate = self;
+
     webview.frame = CGRectMake(0, 0, self.childView.frame.size.width, self.childView.frame.size.height);
     webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    //[webview loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString:url]]];
-    [webview loadRequest: [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy: NSURLRequestReturnCacheDataElseLoad timeoutInterval: 100.0]];
+    // url = @"http://everytimezone.com/";
 
-    //NSURLRequestUseProtocolCachePolicy
 
-    //[NSURLRequest requestWithURL:[NSURL URLWithString:reqString] cachePolicy:NSURLRequestReturnCacheDataDontLoad timeoutInterval: 10.0];
+    //NSString *urlETP = [NSString stringWithFormat:@"%@/swan", self.manager.rootURL];
+
+    NSURL *url = [NSURL URLWithString:urlTechPortal];
+    NSURLRequest * request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval: 180.0];
+    [webview loadRequest:request];
+
+
 
     //initialise syncWebview
     //syncWebview = [[UIWebView alloc]initWithFrame:CGRectMake(500, 0, 300, 200)];
     syncWebview = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, 1, 1)];
     [syncWebview loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString:urlSync]]];
 
-    webview.delegate = self;
-    //self.syncWebView.delegate = self;
-
-
     [self.childView addSubview:webview];
     [self.childView addSubview:syncWebview];
 
     [ [ [ self viewController ] view ] addSubview:self.childView];
+
+    [webview becomeFirstResponder];
 }
 
 
@@ -200,15 +208,12 @@ CDVInvokedUrlCommand *actionCommand;
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSLog(@"cordova-plugin-jtm-webviewer: webView.shouldStartLoadWithRequest");
-    NSString *absoluteString = [[request URL] absoluteString];
 
-    if( absoluteString != nil )
+    NSString *absoluteString = [[request URL] absoluteString];
+    if ([absoluteString hasPrefix:@"ios:"]) {
         NSLog( @"%@", [NSString stringWithFormat:@"URL: %@'", absoluteString] );
 
-    if ([absoluteString hasPrefix:@"ios:"]) {
         NSString *requestedFunction = [[request URL] absoluteString];
-        NSLog( @"%@", [NSString stringWithFormat:@"requestedFunction: %@'", requestedFunction] );
-
         if( [requestedFunction hasPrefix:@"ios:webToNative_AutoLogin"] )
         {
             [self performSelector:@selector(webToNative_AutoLogin)];
