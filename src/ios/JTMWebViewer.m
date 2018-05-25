@@ -110,22 +110,22 @@ CDVInvokedUrlCommand *actionCommand;
 -(void)onActionReceived:(CDVInvokedUrlCommand *)command
 {
     NSLog(@"cordova-plugin-jtm-webviewer: onActionReceived called");
-    
+
     actionCommand = command;
-    
+
     NSDictionary *returnDictionary = @{ @"ping": @"true" };
-    
+
     [self sendActionMessage: returnDictionary];
 }
 
 - (void) sendActionMessage: ( NSDictionary *) dictionary {
-    
+
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject: dictionary
                                                        options:NSJSONWritingPrettyPrinted
                                                          error:&error];
     NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    
+
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: jsonString];
     [pluginResult setKeepCallbackAsBool:YES];
     [self.commandDelegate sendPluginResult:pluginResult callbackId: actionCommand.callbackId];
@@ -134,19 +134,19 @@ CDVInvokedUrlCommand *actionCommand;
 - (void) orientationChanged:(NSNotification *)note
 {
     NSLog(@"cordova-plugin-jtm-webviewer: createViewWithOptions orientationChanged");
-    
+
     if( self.childView != NULL ){
         self.childView.frame = CGRectMake(0 , 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - bottomMargin);
     }
-    
+
 }
 
 - (void)createViewWithOptions:(NSDictionary *)options {
     //todo: check mandatory params that
-    
+
     NSLog(@"cordova-plugin-jtm-webviewer: createViewWithOptions called, this should be called only once");
-    
-    
+
+
     //This is the Designated Initializer
     NSString *urlTechPortal = [NSString stringWithFormat:@"%@", [options objectForKey:@"url"]];
     NSString *urlSync = [NSString stringWithFormat:@"%@", [options objectForKey:@"urlSync"]];
@@ -157,7 +157,10 @@ CDVInvokedUrlCommand *actionCommand;
 
     // urlTechPortal = @"http://jt.itglobal-systems.net/swan";
     // urlTechPortal = @"http://54.153.177.241/hawk";
-    urlTechPortal = @"http://jt.itglobal-systems.net/hawk";
+    // urlTechPortal = @"http://jt.itglobal-systems.net/hawk";
+    //urlTechPortal = @"http://54.153.177.241/hawk/index.php";
+    //urlTechPortal = @"http://54.153.177.241/hawk/index.php";
+    //urlTechPortal = [NSString stringWithFormat:@"%@/index.php", urlTechPortal];
 
 
     NSLog( @"cordova-plugin-jtm-webviewer TECH PORTAL: %@", urlTechPortal );
@@ -230,12 +233,12 @@ CDVInvokedUrlCommand *actionCommand;
         }
         else if( [requestedFunction hasPrefix:@"ios:webToNative_TakePhoto"] )
         {
-            
+
             NSDictionary *returnDictionary = @{
                                                @"ping": @"false",
                                                @"action": @"MultiPhoto"
                                                };
-            
+
             [self sendActionMessage: returnDictionary];
         }else if( [requestedFunction hasPrefix:@"ios:webToNative_Action_TakePhoto"] )
         {
@@ -244,19 +247,19 @@ CDVInvokedUrlCommand *actionCommand;
                                                @"action": @"MultiPhoto",
                                                @"value1": @"0"
                                                };
-            
+
             [self sendActionMessage: returnDictionary];
         }else if( [requestedFunction hasPrefix:@"ios:webToNative_Action_OpenDocument"] )
         {
             NSString *jobid = [requestedFunction stringByReplacingOccurrencesOfString:@"ios:webToNative_Action_OpenDocument_"
                                                                            withString:@""];
-            
+
             NSDictionary *returnDictionary = @{
                                                @"ping": @"false",
                                                @"action": @"OpenDocument",
                                                @"jobid": jobid
                                                };
-            
+
             [self sendActionMessage: returnDictionary];
         }
         else if( [requestedFunction hasPrefix:@"ios:webToNative_IsJobClosable"] )
@@ -264,39 +267,39 @@ CDVInvokedUrlCommand *actionCommand;
             NSArray *items = [requestedFunction componentsSeparatedByString:@"/"];
             NSString *jobid = [items objectAtIndex:1];
             NSString *apptid = [items objectAtIndex:2];
-            
+
             NSDictionary *returnDictionary = @{
                                                @"ping": @"false",
                                                @"action": @"IsJobClosable",
                                                @"jobid": jobid,
                                                @"apptid": apptid
                                                };
-            
+
             [self sendActionMessage: returnDictionary];
         }
-        
+
         //Send All Other Actions if it starts with ios:webToNative_
         else if( [requestedFunction hasPrefix:@"ios:webToNative~"] )
         {
             NSArray *items = [requestedFunction componentsSeparatedByString:@"~"];
             NSString *actionName = [items objectAtIndex:1];
             NSString *actionValue = @"";
-            
+
             if( items.count > 2 ){
                 actionValue = [items objectAtIndex:2];
             }
-            
+
             NSDictionary *returnDictionary = @{
                                                @"ping": @"false",
                                                @"action": actionName,
                                                @"value": actionValue
                                                };
-            
+
             [self sendActionMessage: returnDictionary];
         }
-        
+
     }
-    
+
     return YES;
 }
 
@@ -304,12 +307,12 @@ CDVInvokedUrlCommand *actionCommand;
 - (void)hide:(CDVInvokedUrlCommand *)command
 {
     NSLog(@"cordova-plugin-jtm-webviewer: hide");
-    
+
     if (self.childView.hidden==YES)
     {
         return;
     }
-    
+
     self.childView.hidden = YES;
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
@@ -352,9 +355,9 @@ CDVInvokedUrlCommand *actionCommand;
 
 - (void)webToNative_AutoLogin
 {
-    
+
     NSString *version = @"0";
-    
+
     NSString *autoLoginCallBack = [NSString stringWithFormat:@"autoLogin('%@','%@','%@')", userId, password, version];
     NSString *returnvalue = [webview stringByEvaluatingJavaScriptFromString:autoLoginCallBack];
 }
@@ -365,7 +368,7 @@ CDVInvokedUrlCommand *actionCommand;
 
 
 /*
-aa
+ aa
  //NSString *url=@"http://54.153.177.241/swan";
  
  //- (void)echo:(CDVInvokedUrlCommand *)command;
