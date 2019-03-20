@@ -18,6 +18,10 @@
 //bottom margin for webview, need to display ionic-tab
 NSInteger bottomMargin = 120;
 
+//top margin for parent frame
+NSInteger topMarginParent = 20;
+
+
 //top margin for webview, need to display header
 NSInteger topMargin = 60;
 
@@ -136,7 +140,7 @@ CDVInvokedUrlCommand *actionCommand;
     NSLog(@"cordova-plugin-jtm-webviewer: createViewWithOptions orientationChanged");
 
     if( self.childView != NULL ){
-        self.childView.frame = CGRectMake(0 , 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - bottomMargin);
+        self.childView.frame = CGRectMake(0 , topMarginParent, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - bottomMargin);
     }
 
 }
@@ -171,15 +175,28 @@ CDVInvokedUrlCommand *actionCommand;
     float width = [UIScreen mainScreen].bounds.size.width; //get screen width
     float x = 0;
     float y = topMargin; //this is header margin
+    
+    //x = 100;
+    //This is the value where the parent frame starts
+    
+    x = 0;
 
-    self.childView = [[UIView alloc] initWithFrame:CGRectMake(x,y,width,height)];
-    [self.childView setBackgroundColor:[UIColor blueColor]];
+    self.childView = [[UIView alloc] initWithFrame:CGRectMake(x, topMarginParent,width,height)];
+    
+    [self.childView setBackgroundColor:[UIColor redColor]];
 
+    
     //initializse webview
-    webview = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, 424,468)];
+    // second value of webview frame shows where the child frame starting
+    //webview = [[UIWebView alloc]initWithFrame:CGRectMake(0, 20, 424, 468)];
+    webview = [[UIWebView alloc]initWithFrame:CGRectMake(0, 20, 424, 468)];
     webview.delegate = self;
 
+//    webview.frame = CGRectMake(0, 0, self.childView.frame.size.width, self.childView.frame.size.height);
+    
     webview.frame = CGRectMake(0, 0, self.childView.frame.size.width, self.childView.frame.size.height);
+
+    
     webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     // url = @"http://everytimezone.com/";
 
