@@ -329,6 +329,9 @@ public class JTMWebViewer extends CordovaPlugin {
 
 
                     } else {
+                        if (_url) {
+                            techView.loadUrl(_url);
+                        }
                         techView.setVisibility(View.VISIBLE);
                     }
 
