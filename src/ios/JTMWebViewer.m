@@ -38,9 +38,16 @@ NSString *password;
 {
     NSLog(@"cordova-plugin-jtm-webviewer: show called");
     
+    NSDictionary *options = command.arguments[0];
     if (!self.childView)
     {
-        [self createViewWithOptions:command.arguments[0]];
+        [self createViewWithOptions:options];
+    } 
+    else if ([options count] == 1) 
+    {
+        NSString *urlTechPortal = [NSString stringWithFormat:@"%@", [options objectForKey:@"url"]];    NSURL *url = [NSURL URLWithString:urlTechPortal];
+        NSURLRequest * request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval: 180.0];
+        [webview loadRequest:request];
     }
     
     self.childView.hidden = NO;
